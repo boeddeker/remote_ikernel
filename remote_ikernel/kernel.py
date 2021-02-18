@@ -455,7 +455,7 @@ class RemoteIKernel(object):
         conn = self.connection
         # If the remote system has a different filesystem, a temporary
         # file is needed to hold the json.
-        kernel_name = "./{0}kernel-{1}.json".format(RIK_PREFIX, self.uuid)
+        kernel_name = "/tmp/{0}kernel${{USER}}-{1}.json".format(RIK_PREFIX, self.uuid)
         self.log.info("Established connection; starting kernel.")
 
         # Use the specified working directory or try to change to the same
@@ -471,7 +471,7 @@ class RemoteIKernel(object):
         # Delete the file if it already exists
         conn.sendline("rm -f {0}".format(kernel_name))
         file_contents = json.dumps(self.connection_info)
-        conn.sendline("echo '{0}' > {1}".format(file_contents, kernel_name))
+        conn.sendline(" $(umask 077; echo '{0}' > {1})".format(file_contents, kernel_name))
 
         # Is this the best place for a pre-command? I guess people will just
         # have to deal with it. Pass it on as is.
