@@ -462,14 +462,14 @@ class RemoteIKernel(object):
         # directory on the remote machine.
         if self.workdir:
             self.log.info("Remote working directory {0}.".format(self.workdir))
-            conn.sendline('cd "{0}"'.format(self.workdir))
+            conn.sendline(' cd "{0}"'.format(self.workdir))
         else:
             self.log.info("Current working directory {0}.".format(self.cwd))
-            conn.sendline('cd "{0}"'.format(self.cwd))
+            conn.sendline(' cd "{0}"'.format(self.cwd))
 
         # Create a temporary file to store a copy of the connection information
         # Delete the file if it already exists
-        conn.sendline("rm -f {0}".format(kernel_name))
+        conn.sendline(" rm -f {0}".format(kernel_name))
         file_contents = json.dumps(self.connection_info)
         conn.sendline(" $(umask 077; echo '{0}' > {1})".format(file_contents, kernel_name))
 
@@ -479,7 +479,7 @@ class RemoteIKernel(object):
             conn.sendline(self.precmd)
 
         # Init as a background process so we can delete the tempfile after
-        kernel_init = "{kernel_cmd}".format(kernel_cmd=self.kernel_cmd)
+        kernel_init = " {kernel_cmd}".format(kernel_cmd=self.kernel_cmd)
         kernel_init = kernel_init.format(
             host_connection_file=kernel_name, ci=self.connection_info
         )
@@ -490,7 +490,7 @@ class RemoteIKernel(object):
         # transient file for once the process stops. Trying to do this
         # whilst simultaneously starting the kernel ended up deleting
         # the file before it was read.
-        conn.sendline("rm -f {0}".format(kernel_name))
+        conn.sendline(" rm -f {0}".format(kernel_name))
         conn.sendline("exit")
 
         # Could check this for errors?
